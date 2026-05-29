@@ -45,7 +45,7 @@ docker compose logs -f backend
 
 The stack publishes services only on loopback:
 
-- frontend: `127.0.0.1:3001`
+- frontend: `127.0.0.1:3006`
 - backend: `127.0.0.1:5003`
 
 This is intentional so public traffic goes only through host nginx.
@@ -70,7 +70,7 @@ sudo apt-get install -y certbot python3-certbot-nginx
 sudo certbot --nginx -d zoom-transcribition.keykey.com.ua
 ```
 
-Certbot will add the SSL server block and redirect HTTP to HTTPS.
+The final nginx template in this repository already assumes HTTPS and frontend on `127.0.0.1:3006`. Make sure `.env` uses the same `FRONTEND_PORT` value before reloading nginx.
 
 ## 7. Updating the app
 
