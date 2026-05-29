@@ -1,0 +1,41 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: zoom-transcribition-api
+    restart: unless-stopped
+    environment:
+      WHISPER_MODEL: ${WHISPER_MODEL:-medium}
+      WHISPER_LANGUAGE: ${WHISPER_LANGUAGE:-ru}
+      CHUNK_SECONDS: ${CHUNK_SECONDS:-60}
+      ALLOW_ORIGINS: ${ALLOW_ORIGINS:-https://zoom-transcribition.keykey.com.ua,http://zoom-transcribition.keykey.com.ua,http://localhost:5173,http://127.0.0.1:5173}
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-5003}:8000"
+    volumes:
+      - ./audio:/app/audio
+      - ./output:/app/output
+      - whisper-cache:/root/.cache/whisper
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health')\""]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-}
+    container_name: zoom-transcribition-web
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-3001}:80"
+
+volumes:
+  whisper-cache:
