@@ -50,6 +50,8 @@ The stack publishes services only on loopback:
 
 This is intentional so public traffic goes only through host nginx.
 
+If `docker compose up` fails with `port is already allocated`, change `FRONTEND_PORT` or `BACKEND_PORT` in `.env` to a free local port and update the matching `proxy_pass` value in nginx.
+
 ## 5. Nginx
 
 Copy [deploy/nginx/zoom-transcribition.keykey.com.ua.conf](deploy/nginx/zoom-transcribition.keykey.com.ua.conf) to `/etc/nginx/sites-available/zoom-transcribition.keykey.com.ua` and enable it:
